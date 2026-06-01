@@ -1,0 +1,11 @@
+PORT=5000
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password_here
+DB_NAME=swastik_garage
+JWT_SECRET=swastik_secret_key_change_this
+JWT_EXPIRES_IN=7d
+FRONTEND_URL=http://localhost:3000
+UPI_ID=9898165220@okbizaxis
+UPI_NAME=Swastik Auto Repairers
