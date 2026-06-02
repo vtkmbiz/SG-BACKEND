@@ -4,6 +4,8 @@ const pool = require('../config/db');
 
 exports.login = async (req, res) => {
   try {
+
+    console.log('Login attempt1:', req.body);
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
     const [rows] = await pool.query('SELECT * FROM users WHERE username=?', [username]);
