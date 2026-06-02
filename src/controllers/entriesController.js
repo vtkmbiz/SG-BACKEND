@@ -9,7 +9,20 @@ exports.create = async (req, res) => {
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
-    const { is_new_customer, customer_id, customer_name, contact, email, vehicle, vehicle_no, problems } = req.body;
+    const {
+      is_new_customer,
+      customer_id,
+      customer_name: rawCustomerName,
+      name,
+      contact,
+      email,
+      vehicle,
+      vehicle_no,
+      problems
+    } = req.body;
+
+    const newCustomer = is_new_customer === true || is_new_customer === 'true' || is_new_customer === 1 || is_new_customer === '1';
+    const customer_name = (rawCustomerName || name || '').trim();
     let custId = customer_id;
     let customerInfo = {
       customer_name,
@@ -37,7 +50,7 @@ exports.create = async (req, res) => {
       }
     }
 
-    if (!custId && customer_name) {
+    if (!custId && !newCustomer && customer_name) {
       const [rows] = await conn.query(
         'SELECT id, name, contact, email, vehicle, vehicle_no FROM customers WHERE name = ?',
         [customer_name]
@@ -56,6 +69,10 @@ exports.create = async (req, res) => {
     }
 
     if (!custId) {
+      if (!customer_name) {
+        throw new Error('Customer name is required for new entries');
+      }
+
       const [r] = await conn.query(
         'INSERT INTO customers(name,contact,email,vehicle,vehicle_no,visits,total_spent) VALUES(?,?,?,?,?,1,0)',
         [customer_name, contact, email || null, vehicle, vehicle_no?.toUpperCase()]
